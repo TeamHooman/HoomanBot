@@ -51,11 +51,10 @@ public class EmoteTagParser {
         // ex: 100:10-20,21-31/200:41-51,52-62/400:70-80
         Set<EmoteTag> tags = SECTION.splitToList(emoteTag)      // ["100:10-20,21-31", "200:41-51,52-62", "400:70-80"]
                 .stream()                                       // "100:10-20,21-31"
-                .map(EMOTE::split)                              // ["100", "10-20,21-31"]
-                .map(Iterable::iterator)
+                .map(EMOTE::splitToList)                              // ["100", "10-20,21-31"]
                 .map(l -> ImmutableList.<String>builder()
-                        .add(l.next())
-                        .addAll(INSTANCES.split(l.next()))
+                        .add(l.get(0))
+                        .addAll(INSTANCES.split(l.get(1)))
                         .build())                           // ["100", "10-20", "21-31"]
                 .flatMap(l ->
                         l.subList(1, l.size())

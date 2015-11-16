@@ -16,7 +16,7 @@ public class TwitterHueApplication {
         new SpringApplicationBuilder()
                 .logStartupInfo(true)
                 .sources(TwitterHueApplication.class)
-                .web(false)
+                .web(true)
                 .build()
                 .run(args);
 

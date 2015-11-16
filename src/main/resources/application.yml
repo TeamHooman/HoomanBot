@@ -1,6 +1,9 @@
 spring:
-  profiles.active: twitch,twitter
-
+  profiles.active: twitch,twitter,hue
+  jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: create-drop
 hue:
   appName: Twitter Hue Controller
   deviceName: Ryon's Mac
@@ -9,9 +12,9 @@ hue:
 twitch:
   host: irc.twitch.tv
   port: 6667
-  nick: HoomanBot
-  oauth: oauth:5f2zpdigduicjzb65ndlptvya5kxtt
-  autojoin: "#ryonday"
+  nickname: HoomanBot
+  oAuth: oauth:5f2zpdigduicjzb65ndlptvya5kxtt
+  autoJoin: "#ryonday"
   emoteUrl: http://static-cdn.jtvnw.net/emoticons/v1/%s/%s
 
 

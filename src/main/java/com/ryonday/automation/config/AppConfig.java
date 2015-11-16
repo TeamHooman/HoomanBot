@@ -1,6 +1,7 @@
 package com.ryonday.automation.config;
 
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -10,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Configuration
+@EnableConfigurationProperties
 public class AppConfig {
 
     @Bean
