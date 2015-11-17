@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Nickname implements Comparable<Nickname> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
     @Version
@@ -21,7 +21,7 @@ public class Nickname implements Comparable<Nickname> {
     private String nickname;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nickname", fetch = FetchType.LAZY)
-    private List<Chat> chats;
+    private List<TwitchChatMessage> chats;
 
     public Long getId() {
         return id;
@@ -50,7 +50,7 @@ public class Nickname implements Comparable<Nickname> {
         return this;
     }
 
-    public List<Chat> getChats() {
+    public List<TwitchChatMessage> getChats() {
         return chats;
     }
 

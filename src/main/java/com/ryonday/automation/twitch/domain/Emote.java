@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Emote {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
     private Long id;
 
     @Version
@@ -21,7 +21,7 @@ public class Emote {
     private String emote;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "emote")
-    private List<ChatEmote> chatEmotes;
+    private List<EmoteInChat> uses;
 
     public Long getId() {
         return id;
@@ -45,8 +45,8 @@ public class Emote {
         return this;
     }
 
-    public List<ChatEmote> getChatEmotes() {
-        return chatEmotes;
+    public List<EmoteInChat> getUses() {
+        return uses;
     }
 
     @Override
@@ -56,11 +56,11 @@ public class Emote {
         Emote emote1 = (Emote) o;
         return Objects.equals(id, emote1.id) &&
                 Objects.equals(emote, emote1.emote) &&
-                Objects.equals(chatEmotes, emote1.chatEmotes);
+                Objects.equals(uses, emote1.uses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, emote, chatEmotes);
+        return Objects.hash(id, emote, uses);
     }
 }

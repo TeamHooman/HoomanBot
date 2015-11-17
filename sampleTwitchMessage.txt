@@ -1,0 +1,53 @@
+MessageEvent(
+  channel=Channel(
+    name=#ryonday,
+    channelId=53c04d82-e98d-4446-939a-d7cd1fe6d46d,
+    bot=Version{PircBotX 2.1-SNAPSHOT-90bb39b Java IRC bot - github.com/thelq/pircbotx} Connected{true} Server{irc.twitch.tv} Port{6667},
+    output=org.pircbotx.Channel$1@1ce38432,
+    mode=null,
+    topic=,
+    topicTimestamp=0,
+    createTimestamp=0,
+    topicSetter=null,
+    moderated=false,
+    noExternalMessages=false,
+    inviteOnly=false,
+    secret=false,
+    channelPrivate=false,
+    topicProtection=false,
+    channelLimit=-1,
+    channelKey=null,
+    modeChangeLatch=null,
+    modeChangeLock=java.lang.Object@42b84df8
+  ),
+  channelSource=#ryonday,
+  userHostmask=UserHostmask(
+    extbanPrefix=null,
+    nick=ryonday,
+    login=ryonday,
+    hostname=ryonday.tmi.twitch.tv
+  ),
+  user=User(
+      super=UserHostmask(
+      extbanPrefix=null,
+      nick=ryonday,
+      login=ryonday,
+      hostname=ryonday.tmi.twitch.tv
+    ),
+    userId=1e21efe4-090e-4fec-a8d8-e429b78f93c3,
+    realName=,
+    awayMessage=null,
+    ircop=false,
+    server=,
+    hops=0
+  ),
+  message=ryonEat ryonEat ryonGood ryonGood ryonGucci ryonSail ryonScotch ryonScotch ryonBye ryonRealTalk ryonRealTalk,
+  color=#9ACD32,
+  display-name=RyonDay,
+  emotes=47816:0-6,8-14/44751:16-23,25-32/44757:34-42/44579:44-51/37365:53-62,64-73/44577:75-81/38117:83-94,96-107
+  subscriber=1,
+  turbo=0,
+  user-id=58878748,
+  user-type=
+
+)

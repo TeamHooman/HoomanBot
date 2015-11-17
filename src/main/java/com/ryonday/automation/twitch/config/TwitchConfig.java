@@ -40,7 +40,7 @@ public class TwitchConfig {
     private String autoJoin;
 
     @NotNull(message = "Must have a valid Twitch Emote URL.")
-    private URL emoteURL;
+    private URL emoteUrl;
 
     public String getAutoJoin() {
         return autoJoin;
@@ -87,12 +87,12 @@ public class TwitchConfig {
         return this;
     }
 
-    public URL getEmoteURL() {
-        return emoteURL;
+    public URL getEmoteUrl() {
+        return emoteUrl;
     }
 
-    public TwitchConfig setEmoteURL(URL emoteURL) {
-        this.emoteURL = emoteURL;
+    public TwitchConfig setEmoteUrl(URL emoteURL) {
+        this.emoteUrl = emoteURL;
         return this;
     }
 

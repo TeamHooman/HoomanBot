@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "chats")
-public class Chat implements Comparable<Chat> {
+@Table(name = "twitch_chat_messages")
+public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,10 +31,10 @@ public class Chat implements Comparable<Chat> {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "channel_id", nullable = false)
-    private Channel channel;
+    private TwitchChannel channel;
 
     @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<ChatEmote> chatEmotes;
+    private List<EmoteInChat> chatEmotes;
 
     @Column(name = "text", nullable = false)
     private String text;
@@ -43,7 +43,7 @@ public class Chat implements Comparable<Chat> {
         return id;
     }
 
-    public Chat setId(Long id) {
+    public TwitchChatMessage setId(Long id) {
         this.id = id;
         return this;
     }
@@ -52,7 +52,7 @@ public class Chat implements Comparable<Chat> {
         return version;
     }
 
-    protected Chat setVersion(Long version) {
+    protected TwitchChatMessage setVersion(Long version) {
         this.version = version;
         return this;
     }
@@ -61,16 +61,16 @@ public class Chat implements Comparable<Chat> {
         return text;
     }
 
-    public Chat setText(String text) {
+    public TwitchChatMessage setText(String text) {
         this.text = text;
         return this;
     }
 
-    public Channel getChannel() {
+    public TwitchChannel getChannel() {
         return channel;
     }
 
-    public Chat setChannel(Channel channel) {
+    public TwitchChatMessage setChannel(TwitchChannel channel) {
         this.channel = channel;
         return this;
     }
@@ -79,7 +79,7 @@ public class Chat implements Comparable<Chat> {
         return nickColor;
     }
 
-    public Chat setNickColor(Color nickColor) {
+    public TwitchChatMessage setNickColor(Color nickColor) {
         this.nickColor = nickColor;
         return this;
     }
@@ -88,7 +88,7 @@ public class Chat implements Comparable<Chat> {
         return nickname;
     }
 
-    public Chat setNickname(Nickname nickname) {
+    public TwitchChatMessage setNickname(Nickname nickname) {
         this.nickname = nickname;
         return this;
     }
@@ -97,7 +97,7 @@ public class Chat implements Comparable<Chat> {
         return timestamp;
     }
 
-    public Chat setTimestamp(LocalDateTime timestamp) {
+    public TwitchChatMessage setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
         return this;
     }
@@ -105,8 +105,8 @@ public class Chat implements Comparable<Chat> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Chat)) return false;
-        Chat chat = (Chat) o;
+        if (!(o instanceof TwitchChatMessage)) return false;
+        TwitchChatMessage chat = (TwitchChatMessage) o;
         return Objects.equals(id, chat.id) &&
                 Objects.equals(timestamp, chat.timestamp) &&
                 Objects.equals(nickColor, chat.nickColor) &&
@@ -121,10 +121,10 @@ public class Chat implements Comparable<Chat> {
     }
 
     @Override
-    public int compareTo(Chat o) {
+    public int compareTo(TwitchChatMessage o) {
         return channelAndTimestamp.compare( this, o );
     }
 
-    public final static Comparator<Chat> channelAndTimestamp = Comparator.comparing(Chat::getChannel).thenComparing(Chat::getTimestamp);
-    public final static Comparator<Chat> nicknameAndTimestamp = Comparator.comparing( Chat::getNickname ).thenComparing( Chat::getTimestamp );
+    public final static Comparator<TwitchChatMessage> channelAndTimestamp = Comparator.comparing(TwitchChatMessage::getChannel).thenComparing(TwitchChatMessage::getTimestamp);
+    public final static Comparator<TwitchChatMessage> nicknameAndTimestamp = Comparator.comparing( TwitchChatMessage::getNickname ).thenComparing( TwitchChatMessage::getTimestamp );
 }

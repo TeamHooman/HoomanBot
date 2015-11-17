@@ -3,10 +3,10 @@ package com.ryonday.automation.twitch.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "chatEmotes",
+@Table(name = "emotes_in_chat",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"chat_id", "startIndex"}),
                 @UniqueConstraint(columnNames = {"chat_id", "endIndex"})})
-public class ChatEmote {
+public class EmoteInChat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,7 +18,7 @@ public class ChatEmote {
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", nullable = false, updatable = false)
-    private Chat chat;
+    private TwitchChatMessage chat;
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "emote_id")
@@ -34,7 +34,7 @@ public class ChatEmote {
         return id;
     }
 
-    public ChatEmote setId(Long id) {
+    public EmoteInChat setId(Long id) {
         this.id = id;
         return this;
     }
@@ -43,12 +43,12 @@ public class ChatEmote {
         return version;
     }
 
-    protected ChatEmote setVersion(Long version) {
+    protected EmoteInChat setVersion(Long version) {
         this.version = version;
         return this;
     }
 
-    public Chat getChat() {
+    public TwitchChatMessage getChat() {
         return chat;
     }
 
@@ -56,7 +56,7 @@ public class ChatEmote {
         return emote;
     }
 
-    public ChatEmote setEmote(Emote emote) {
+    public EmoteInChat setEmote(Emote emote) {
         this.emote = emote;
         return this;
     }
@@ -65,7 +65,7 @@ public class ChatEmote {
         return endIndex;
     }
 
-    public ChatEmote setEndIndex(Long endIndex) {
+    public EmoteInChat setEndIndex(Long endIndex) {
         this.endIndex = endIndex;
         return this;
     }
@@ -75,7 +75,7 @@ public class ChatEmote {
         return startIndex;
     }
 
-    public ChatEmote setStartIndex(Long startIndex) {
+    public EmoteInChat setStartIndex(Long startIndex) {
         this.startIndex = startIndex;
         return this;
     }
