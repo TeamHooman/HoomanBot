@@ -17,4 +17,7 @@ twitch:
   autoJoin: "#ryonday"
   emoteUrl: http://static-cdn.jtvnw.net/emoticons/v1/%s/%s
 
-
+logging:
+  level:
+#    org.hibernate: DEBUG
+    org.springframework.data: TRACE

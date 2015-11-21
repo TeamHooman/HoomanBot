@@ -1,5 +1,6 @@
 package com.ryonday.automation.hue.config;
 
+import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHNotificationManager;
 import com.philips.lighting.hue.sdk.PHSDKListener;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -87,5 +89,19 @@ public class HueConfig {
                 hueSDK.getSDKVersion(), appName, deviceName );
 
         return hueSDK;
+    }
+
+    @Bean(name="hueAccessPoint")
+    public PHAccessPoint configureAccessPoint() {
+        if( isNullOrEmpty(bridgeIp) || isNullOrEmpty( username )) {
+            logger.warn("Bridge IP and/or Username not available; cannot autoconnect.");
+            return null;
+        }
+
+        PHAccessPoint accessPoint = new PHAccessPoint();
+        accessPoint.setIpAddress( bridgeIp);
+        accessPoint.setUsername( username );
+        logger.info("Returning Hue Access Point: {}", accessPoint );
+        return accessPoint;
     }
 }

@@ -12,11 +12,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Encapsulates the Emote ID and start/end indices for a Twitch emote tag.
  */
 public class EmoteTag implements Comparable<EmoteTag> {
-    public final int id;
+    public final long id;
     public final int startIndex;
     public final int endIndex;
 
-    public EmoteTag(int id, int startIndex, int endIndex) {
+    public EmoteTag(long id, int startIndex, int endIndex) {
         checkArgument(startIndex > -1, "Negative emote start index (%s) not allowed.", startIndex);
         checkArgument(endIndex > startIndex, "Nonpositive emote length ( %s - %s = %s) not allowed.", endIndex, startIndex, endIndex - startIndex);
 
@@ -25,7 +25,7 @@ public class EmoteTag implements Comparable<EmoteTag> {
         this.startIndex = startIndex;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -68,8 +68,8 @@ public class EmoteTag implements Comparable<EmoteTag> {
                 .toString();
     }
 
-    public final static Comparator<EmoteTag> byStartingIndex = Comparator.comparingInt( EmoteTag::getStartIndex );
-    public final static Comparator<EmoteTag> byId = Comparator.comparingInt( EmoteTag::getId );
-    public final static Comparator<EmoteTag> byEndIndex = Comparator.comparingInt(EmoteTag::getEndIndex);
+    public final static Comparator<EmoteTag> byStartingIndex = Comparator.comparingLong( EmoteTag::getStartIndex );
+    public final static Comparator<EmoteTag> byId = Comparator.comparingLong( EmoteTag::getId );
+    public final static Comparator<EmoteTag> byEndIndex = Comparator.comparingLong(EmoteTag::getEndIndex);
     public final static Comparator<EmoteTag> naturalOrder = byId.thenComparing(byStartingIndex).thenComparing(byEndIndex);
 }

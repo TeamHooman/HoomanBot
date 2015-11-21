@@ -1,12 +1,17 @@
 package com.ryonday.automation.twitch.domain;
 
+import com.beust.jcommander.internal.Sets;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSortedSet;
+
 import javax.persistence.*;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "twitch_channels", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
-public class TwitchChannel implements Comparable<TwitchChannel>{
+public class        TwitchChannel implements Comparable<TwitchChannel>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,8 +24,8 @@ public class TwitchChannel implements Comparable<TwitchChannel>{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "name", fetch = FetchType.LAZY)
-    private List<TwitchChatMessage> chats;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "channel", fetch = FetchType.LAZY)
+    private Set<TwitchChatMessage> chats = Sets.newHashSet();
 
     public Long getId() {
         return id;
@@ -49,8 +54,23 @@ public class TwitchChannel implements Comparable<TwitchChannel>{
         return this;
     }
 
-    public List<TwitchChatMessage> getChats() {
-        return chats;
+    public Set<TwitchChatMessage> getChats() {
+        return ImmutableSortedSet.copyOf(chats);
+    }
+
+    public TwitchChannel addChats( Collection<TwitchChatMessage> chats) {
+        if( chats != null ) {
+            chats.forEach(this::addChat);
+        }
+        return this;
+    }
+
+    public TwitchChannel addChat( TwitchChatMessage chat ) {
+        if( chat != null && !chats.contains( chat )) {
+            chats.add( chat );
+            chat.setChannel( this );
+        }
+        return this;
     }
 
     @Override
@@ -64,6 +84,15 @@ public class TwitchChannel implements Comparable<TwitchChannel>{
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(TwitchChannel.class)
+            .add("id", id)
+            .add("version", version)
+            .add("name", name)
+            .toString();
     }
 
     @Override

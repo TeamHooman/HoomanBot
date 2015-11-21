@@ -3,9 +3,11 @@ package com.ryonday.automation;
 import org.slf4j.Logger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cache.annotation.EnableCaching;
 import twitter4j.TwitterException;
 
 @SpringBootApplication
+@EnableCaching
 public class TwitterHueApplication {
 
     private final static Logger logger = org.slf4j.LoggerFactory.getLogger(TwitterHueApplication.class);

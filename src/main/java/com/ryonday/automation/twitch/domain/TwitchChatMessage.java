@@ -1,11 +1,16 @@
 package com.ryonday.automation.twitch.domain;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
+
 import javax.persistence.*;
-import java.awt.Color;
+import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "twitch_chat_messages")
@@ -19,24 +24,24 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
     @Column(name = "version", columnDefinition = "integer DEFAULT 0", nullable = false)
     private Long version;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
-    @Column(name = "nickColor", nullable = false)
+    @Column(name = "nickColor", nullable = false, updatable = false)
     private Color nickColor;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "nickname_id", nullable = false)
+    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "nickname_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Nickname nickname;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "channel_id", nullable = false)
+    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false, updatable = false)
     private TwitchChannel channel;
 
     @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<EmoteInChat> chatEmotes;
+    private Set<EmoteInChat> chatEmotes = Sets.newHashSet();
 
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", nullable = false, updatable = false)
     private String text;
 
     public Long getId() {
@@ -72,6 +77,17 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
 
     public TwitchChatMessage setChannel(TwitchChannel channel) {
         this.channel = channel;
+        channel.addChat(this);
+        return this;
+    }
+
+    public Nickname getNickname() {
+        return nickname;
+    }
+
+    public TwitchChatMessage setNickname(Nickname nickname) {
+        this.nickname = nickname;
+        nickname.addChat(this);
         return this;
     }
 
@@ -84,12 +100,22 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
         return this;
     }
 
-    public Nickname getNickname() {
-        return nickname;
+    public Set<EmoteInChat> getChatEmotes() {
+        return ImmutableSortedSet.copyOf(chatEmotes);
     }
 
-    public TwitchChatMessage setNickname(Nickname nickname) {
-        this.nickname = nickname;
+    public TwitchChatMessage addChatEmotes(Collection<EmoteInChat> chatEmotes) {
+        if (chatEmotes != null) {
+            chatEmotes.forEach(this::addChatEmote);
+        }
+        return this;
+    }
+
+    public TwitchChatMessage addChatEmote(EmoteInChat emoteInChat) {
+        if (emoteInChat != null && !chatEmotes.contains(emoteInChat)) {
+            chatEmotes.add(emoteInChat);
+            emoteInChat.setChat(this);
+        }
         return this;
     }
 
@@ -107,24 +133,37 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
         if (this == o) return true;
         if (!(o instanceof TwitchChatMessage)) return false;
         TwitchChatMessage chat = (TwitchChatMessage) o;
-        return Objects.equals(id, chat.id) &&
-                Objects.equals(timestamp, chat.timestamp) &&
-                Objects.equals(nickColor, chat.nickColor) &&
-                Objects.equals(nickname, chat.nickname) &&
-                Objects.equals(channel, chat.channel) &&
-                Objects.equals(text, chat.text);
+        return Objects.equals(timestamp, chat.timestamp) &&
+            Objects.equals(nickColor, chat.nickColor) &&
+            Objects.equals(nickname, chat.nickname) &&
+            Objects.equals(channel, chat.channel) &&
+            Objects.equals(text, chat.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, timestamp, nickColor, nickname, channel, text);
+        return Objects.hash(timestamp, nickColor, nickname, channel, text);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(TwitchChatMessage.class)
+            .add("channel", channel)
+            .add("id", id)
+            .add("version", version)
+            .add("timestamp", timestamp)
+            .add("nickColor", nickColor)
+            .add("nickname", nickname)
+            .add("chatEmotes", chatEmotes)
+            .add("text", text)
+            .toString();
     }
 
     @Override
     public int compareTo(TwitchChatMessage o) {
-        return channelAndTimestamp.compare( this, o );
+        return channelAndTimestamp.compare(this, o);
     }
 
     public final static Comparator<TwitchChatMessage> channelAndTimestamp = Comparator.comparing(TwitchChatMessage::getChannel).thenComparing(TwitchChatMessage::getTimestamp);
-    public final static Comparator<TwitchChatMessage> nicknameAndTimestamp = Comparator.comparing( TwitchChatMessage::getNickname ).thenComparing( TwitchChatMessage::getTimestamp );
+    public final static Comparator<TwitchChatMessage> nicknameAndTimestamp = Comparator.comparing(TwitchChatMessage::getNickname).thenComparing(TwitchChatMessage::getTimestamp);
 }

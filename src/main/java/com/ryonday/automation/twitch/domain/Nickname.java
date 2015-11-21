@@ -1,8 +1,12 @@
 package com.ryonday.automation.twitch.domain;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
+
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "nicknames",
@@ -17,11 +21,11 @@ public class Nickname implements Comparable<Nickname> {
     @Column(name = "version", columnDefinition = "integer DEFAULT 0", nullable = false)
     private Long version;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", nullable = false, updatable = false)
     private String nickname;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nickname", fetch = FetchType.LAZY)
-    private List<TwitchChatMessage> chats;
+    private Set<TwitchChatMessage> chats = Sets.newHashSet();
 
     public Long getId() {
         return id;
@@ -50,8 +54,23 @@ public class Nickname implements Comparable<Nickname> {
         return this;
     }
 
-    public List<TwitchChatMessage> getChats() {
-        return chats;
+    public Set<TwitchChatMessage> getChats() {
+        return ImmutableSortedSet.copyOf(chats);
+    }
+
+    public Nickname addChats( Set<TwitchChatMessage> chats ) {
+        if( chats != null ) {
+            chats.forEach( this::addChat);
+        }
+        return this;
+    }
+
+    public Nickname addChat( TwitchChatMessage chat ) {
+        if( !chats.contains( chat )) {
+            chats.add( chat );
+            chat.setNickname( this );
+        }
+        return this;
     }
 
     @Override
@@ -65,6 +84,15 @@ public class Nickname implements Comparable<Nickname> {
     @Override
     public int hashCode() {
         return Objects.hash(nickname);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(Nickname.class)
+            .add("id", id)
+            .add("version", version)
+            .add("nickname", nickname)
+            .toString();
     }
 
     @Override

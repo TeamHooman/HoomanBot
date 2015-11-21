@@ -1,22 +1,20 @@
 package com.ryonday.automation.twitch.handler;
 
 import com.google.common.base.Preconditions;
-import com.ryonday.automation.twitch.EmoteTag;
 import com.ryonday.automation.twitch.domain.Nickname;
 import com.ryonday.automation.twitch.domain.TwitchChannel;
 import com.ryonday.automation.twitch.domain.TwitchChatMessage;
 import com.ryonday.automation.twitch.repo.*;
-import com.ryonday.automation.twitch.util.EmoteTagParser;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class TwitchMessageSQLHandler extends ListenerAdapter {
@@ -29,6 +27,7 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
     private final ChatEmoteRepository chatEmoteRepo;
     private final TwitchChannelRepository chanRepo;
 
+    @Autowired
     public TwitchMessageSQLHandler(TwitchChannelRepository chanRepo,
                                    NicknameRepository nickRepo,
                                    TwitchChatMessageRepository chatRepo,
@@ -42,48 +41,65 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
     }
 
     @Override
+    @Transactional
     public void onMessage(MessageEvent messageEvent) throws Exception {
         logger.debug("Received Channel Message: {}", messageEvent);
-        String chanName = messageEvent.getChannel().getName();
-        Long twitchUserId = Long.parseLong(messageEvent.getTags().get("user-id"));
-        String emoteString = messageEvent.getTags().get("emotes");
-        String nickColor = messageEvent.getTags().get("color");
-        String text = messageEvent.getMessage();
+        final String chanName = messageEvent.getChannel().getName();
+        final Long twitchUserId = Long.parseLong(messageEvent.getTags().get("user-id"));
+        final String emoteString = messageEvent.getTags().get("emotes");
+        final String nickColor = messageEvent.getTags().get("color");
+        final String text = messageEvent.getMessage();
 
-        Optional<TwitchChannel> maybeChannel = chanRepo.findByName(chanName);
-        Optional<Nickname> maybeNick = nickRepo.findOne(twitchUserId);
+        try {
 
-        TwitchChannel channel = chanRepo
-            .findByName(chanName)
-            .orElse(
-                chanRepo.save(
-                    new TwitchChannel()
-                        .setName(chanName)
-                ));
+            TwitchChannel channel = chanRepo
+                .findByNameIgnoreCase(chanName)
+                .orElseGet(
+                    () -> chanRepo.save(
+                        new TwitchChannel()
+                            .setName(chanName))
+                );
 
-        Nickname nickname = nickRepo
-            .findOne(twitchUserId)
-            .orElse(
-                nickRepo.save(
-                    new Nickname()
-                        .setId( twitchUserId )
-                        .setNickname(messageEvent.getTags().get("display-name").toLowerCase())
-                ));
+            logger.info("channel: {}", channel );
+            Nickname nickname = nickRepo
+                .findOne(twitchUserId)
+                .orElseGet(
+                    () -> nickRepo.save(
+                        new Nickname()
+                            .setId(twitchUserId)
+                            .setNickname(messageEvent.getTags().get("display-name").toLowerCase()))
+                );
 
-        Set<EmoteTag> emoteTags = EmoteTagParser.parseEmoteTag( emoteString );
+            logger.info("nickname: {}", nickname );
+//        Set<EmoteInChat> emotesInChat = EmoteTagParser
+//            .parseEmoteTag(emoteString)
+//            .stream()
+//            .map(tag -> new EmoteInChat()
+//                .setStartIndex(tag.startIndex)
+//                .setEndIndex(tag.endIndex)
+//                .setEmote(emoteRepo
+//                    .findOne(tag.id)
+//                    .orElseGet(() ->
+//                        emoteRepo.save(
+//                            new Emote()
+//                                .setId(tag.id)
+//                                .setEmote(
+//                                    text.substring(
+//                                        tag.startIndex,
+//                                        tag.endIndex))))))
+//            .collect(Collectors.toSet());
 
-        TwitchChatMessage message = new TwitchChatMessage()
-            .setChannel( channel )
-            .setText( text )
-            .setNickname( nickname )
-            .setNickColor(Color.decode(nickColor.substring(1)))
-            .setTimestamp( LocalDateTime.now() );
 
-        TwitchC
+            chatRepo.save(
+                new TwitchChatMessage()
+                    .setChannel(channel)
+                    .setNickname(nickname)
+                    .setText(text)
+                    .setTimestamp(LocalDateTime.now())
+                    .setNickColor(Color.decode(nickColor)));
 
-        if (messageEvent.getMessage().startsWith("HoomanBot")) {
-            messageEvent.respond("HELLO HOOMAN");
+        } catch (Exception ex) {
+            logger.error("Received exception.", ex);
         }
-
     }
 }

@@ -31,7 +31,7 @@ public class HueListener implements PHSDKListener {
 
     @Override
     public void onCacheUpdated(List<Integer> list, PHBridge phBridge) {
-        logger.info("onCacheUpdated(list = {}, bridgeId = {})", JOINER.join(list), phBridge.getResourceCache().getBridgeConfiguration().getBridgeID());
+//        logger.info("onCacheUpdated(list = {}, bridgeId = {})", JOINER.join(list), phBridge.getResourceCache().getBridgeConfiguration().getBridgeID());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class HueListener implements PHSDKListener {
 
     @Override
     public void onConnectionResumed(PHBridge bridge) {
-        logger.info("onConnectionResumed({})", bridge.getResourceCache().getBridgeConfiguration().getBridgeID());
+//        logger.info("onConnectionResumed({})", bridge.getResourceCache().getBridgeConfiguration().getBridgeID());
 
     }
 

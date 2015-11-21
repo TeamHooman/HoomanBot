@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface TwitchChannelRepository extends TwitchRepository<TwitchChannel, Long> {
 
-    Optional<TwitchChannel> findByName(String name);
+    Optional<TwitchChannel> findByNameIgnoreCase(String name);
 }

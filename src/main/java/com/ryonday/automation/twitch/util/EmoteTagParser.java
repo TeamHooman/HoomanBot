@@ -42,10 +42,10 @@ public class EmoteTagParser {
     private final static Splitter RANGE = Splitter.on('-').limit(2).trimResults();
 
     public static Set<EmoteTag> parseEmoteTag(String emoteTag) {
-        if (Strings.isNullOrEmpty(emoteTag) || !EMOTE_TAG_PATTERN.matcher(emoteTag).matches()) {
-            logger.warn("Emote tag content did not match expected emote tag pattern.\n\t" +
+        if (Strings.isNullOrEmpty(emoteTag)  || !EMOTE_TAG_PATTERN.matcher(emoteTag).matches()) {
+            logger.warn("Empty/Null/noncompliant emote tag.\n\t" +
                     "Pattern: '{}'\n\t" +
-                    "Tag:     '{}'", emoteTag, EMOTE_TAG_PATTERN.toString());
+                    "Tag:     '{}'", EMOTE_TAG_PATTERN, emoteTag);
             return ImmutableSet.of();
         }
         // ex: 100:10-20,21-31/200:41-51,52-62/400:70-80
