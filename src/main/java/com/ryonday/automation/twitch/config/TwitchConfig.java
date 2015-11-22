@@ -10,6 +10,8 @@ import org.pircbotx.hooks.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import javax.validation.constraints.NotNull;
@@ -98,7 +100,7 @@ public class TwitchConfig {
     }
 
     @Bean(name = "twitchIRCConfig")
-    public Configuration twitchIRCConfig(List<Listener> listeners) {
+    public Configuration.Builder twitchIRCConfig(List<Listener> listeners) {
 
         checkArgument(!isNullOrEmpty(host));
         checkArgument(port > 0);
@@ -110,7 +112,7 @@ public class TwitchConfig {
         // Some config items from https://github.com/TheLQ/pircbotx/wiki/Twitch.tv-support
         // such as the CAP handlers and the autoNickChange/JoinOnWhoEnabled settings.
 
-        Configuration config = new Configuration.Builder()
+        Configuration.Builder config = new Configuration.Builder()
             .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
             .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
             .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
@@ -124,18 +126,16 @@ public class TwitchConfig {
                     .omitEmptyStrings()
                     .split(autoJoin))
             .setServerPassword(oAuth)
-            .addListeners(listeners)
-            .buildForServer(host, port);
-
+            .addListeners(listeners);
 
         logger.info("Constructed Twitch IRC Configuration: {}", config);
 
         return config;
     }
 
-    @Bean(name = "bot")
-    public PircBotX bot(Configuration config) {
-        PircBotX bot = new PircBotX(config);
+    @Bean(name = "twitchBot")
+    public PircBotX twitchBot(Configuration.Builder config) {
+        PircBotX bot = new PircBotX(config.buildForServer(host, port));
         return bot;
     }
 }

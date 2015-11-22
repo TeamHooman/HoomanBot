@@ -57,7 +57,7 @@ public class EmoteInChat {
 
     public EmoteInChat setChat(TwitchChatMessage chat) {
         if (chat != null) {
-            this.setChat(chat);
+            this.chat = chat;
             chat.addChatEmote( this );
         }
         return this;

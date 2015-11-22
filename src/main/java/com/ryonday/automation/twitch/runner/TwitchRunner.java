@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,13 +43,17 @@ public class TwitchRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         String command;
 
-       taskExecutor.execute(() -> {
-        try {
-            twitchBot.startBot();
-        } catch (IOException | IrcException e) {
-            e.printStackTrace();
-        }
-    });
-
+        Stream.of(twitchBot)
+            .forEach(
+                t ->
+                    taskExecutor.execute(
+                        () -> {
+                            try {
+                                t.startBot();
+                            } catch (IOException | IrcException e) {
+                                e.printStackTrace();
+                            }
+                        })
+            );
     }
 }

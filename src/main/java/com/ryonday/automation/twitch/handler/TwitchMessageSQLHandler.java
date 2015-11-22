@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -44,7 +43,9 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
     @Override
     @Transactional
     public void onMessage(MessageEvent messageEvent) throws Exception {
+
         logger.debug("Received Channel Message: {}", messageEvent);
+
         final String chanName = messageEvent.getChannel().getName();
         final Long twitchUserId = Long.parseLong(messageEvent.getTags().get("user-id"));
         final String emoteString = messageEvent.getTags().get("emotes");
@@ -52,53 +53,44 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
         final String text = messageEvent.getMessage();
 
         try {
-
-            TwitchChannel channel = chanRepo
-                .findByNameIgnoreCase(chanName)
-                .orElseGet(
-                    () -> chanRepo.save(
-                        new TwitchChannel()
-                            .setName(chanName))
-                );
-
-            logger.info("channel: {}", channel);
-            Nickname nickname = nickRepo
-                .findOne(twitchUserId)
-                .orElseGet(
-                    () -> nickRepo.save(
-                        new Nickname()
-                            .setId(twitchUserId)
-                            .setNickname(messageEvent.getTags().get("display-name").toLowerCase()))
-                );
-
-            logger.info("nickname: {}", nickname);
-            Set<EmoteInChat> emotesInChat = EmoteTagParser
-                .parseEmoteTag(emoteString)
-                .stream()
-                .map(tag -> new EmoteInChat()
-                    .setStartIndex(tag.startIndex)
-                    .setEndIndex(tag.endIndex)
-                    .setEmote(emoteRepo
-                        .findOne(tag.id)
-                        .orElseGet(() ->
-                            emoteRepo.save(
-                                new Emote()
-                                    .setId(tag.id)
-                                    .setEmote(
-                                        text.substring(
-                                            tag.startIndex,
-                                            tag.endIndex + 1 /* Bleh */))))))
-                .collect(Collectors.toSet());
-
-
-            chatRepo.save(new TwitchChatMessage()
-                .setChannel(channel)
-                .setNickname(nickname)
-                .setNickColor(Color.web(nickColor))
-                .setText(text)
-                .addChatEmotes(emotesInChat)
-                .setTimestamp(LocalDateTime.now()));
-
+            chatRepo.save(
+                new TwitchChatMessage()
+                    .setTimestamp(LocalDateTime.now())
+                    .setNickColor(Color.web(nickColor))
+                    .setText(text)
+                    .setChannel(chanRepo
+                        .findByNameIgnoreCase(chanName)
+                        .orElseGet(
+                            () -> chanRepo.save(
+                                new TwitchChannel()
+                                    .setName(chanName)))
+                    )
+                    .setNickname(nickRepo
+                        .findOne(twitchUserId)
+                        .orElseGet(
+                            () -> nickRepo.save(
+                                new Nickname()
+                                    .setId(twitchUserId)
+                                    .setNickname(messageEvent.getTags().get("display-name").toLowerCase())))
+                    )
+                    .addChatEmotes(EmoteTagParser
+                        .parseEmoteTag(emoteString)
+                        .stream()
+                        .map(tag -> new EmoteInChat()
+                            .setStartIndex(tag.startIndex)
+                            .setEndIndex(tag.endIndex)
+                            .setEmote(emoteRepo
+                                .findOne(tag.id)
+                                .orElseGet(() ->
+                                    emoteRepo.save(
+                                        new Emote()
+                                            .setId(tag.id)
+                                            .setEmote(
+                                                text.substring(
+                                                    tag.startIndex,
+                                                    tag.endIndex + 1 /* Bleh */)))))
+                        )
+                        .collect(Collectors.toSet())));
 
         } catch (Exception ex) {
             logger.error("Received exception.", ex);

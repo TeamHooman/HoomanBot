@@ -1,9 +1,13 @@
 spring:
-  profiles.active: twitch,twitter,hue
+  cache:
+      cache-names: twitch
+      type: guava
+  profiles:
+      active: twitch,twitter,hue
   jpa:
       show-sql: true
       hibernate:
-        ddl-auto: create-drop
+          ddl-auto: create-drop
 hue:
   appName: Twitter Hue Controller
   deviceName: Ryon's Mac
@@ -21,3 +25,4 @@ logging:
   level:
 #    org.hibernate: DEBUG
     org.springframework.data: TRACE
+    org.springframework.cache: DEBUG

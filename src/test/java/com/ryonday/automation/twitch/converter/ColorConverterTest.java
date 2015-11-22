@@ -1,13 +1,11 @@
 package com.ryonday.automation.twitch.converter;
 
+import javafx.scene.paint.Color;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.paint.Color;
-
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 public class ColorConverterTest {
 
@@ -16,12 +14,12 @@ public class ColorConverterTest {
     ColorConverter cc = new ColorConverter();
 
     @Test
-    public void testItReturnsNullOnNullInput() throws Exception {
+    public void testItReturnsBlackOnNullInput() throws Exception {
         String s = cc.convertToDatabaseColumn( null );
-        assertNull( s );
+        assertEquals( s, "#000000" );
 
         Color c = cc.convertToEntityAttribute( null );
-        assertNull( c );
+        assertEquals( c, Color.BLACK );
     }
 
     @Test

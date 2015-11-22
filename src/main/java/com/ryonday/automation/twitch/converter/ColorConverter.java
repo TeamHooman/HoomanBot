@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 @Converter(autoApply = true)
 public class ColorConverter implements AttributeConverter<Color, String> {
     private final static Logger logger = LoggerFactory.getLogger(ColorConverter.class);
@@ -16,8 +14,8 @@ public class ColorConverter implements AttributeConverter<Color, String> {
     @Override
     public String convertToDatabaseColumn(Color color) {
         if (color == null) {
-            logger.warn("Cannot convert null color.");
-            return null;
+            logger.warn("Received null Color; returning Black (#000000).");
+            return "#000000";
         }
 
         return String.format("#%02X%02X%02X",
@@ -28,14 +26,10 @@ public class ColorConverter implements AttributeConverter<Color, String> {
 
     @Override
     public Color convertToEntityAttribute(String colorString) {
-        if (isNullOrEmpty(colorString)) {
-            return null;
-        }
-
         try {
             return Color.web(colorString);
-        } catch( Exception ex ) {
-            logger.error("Could not parse color String from database: {}", colorString );
+        } catch (Exception ex) {
+            logger.error("Could not parse color String from database ({}); returning Black (#000000)", colorString);
             return Color.BLACK;
         }
     }
