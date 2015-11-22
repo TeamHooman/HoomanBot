@@ -42,51 +42,54 @@ public class EmoteTagParser {
     private final static Splitter RANGE = Splitter.on('-').limit(2).trimResults();
 
     public static Set<EmoteTag> parseEmoteTag(String emoteTag) {
-        if (Strings.isNullOrEmpty(emoteTag)  || !EMOTE_TAG_PATTERN.matcher(emoteTag).matches()) {
+        if (Strings.isNullOrEmpty(emoteTag)) {
+            return ImmutableSet.of();
+        } else if( !EMOTE_TAG_PATTERN.matcher(emoteTag).matches()) {
             logger.warn("Empty/Null/noncompliant emote tag.\n\t" +
-                    "Pattern: '{}'\n\t" +
-                    "Tag:     '{}'", EMOTE_TAG_PATTERN, emoteTag);
+                "Pattern: '{}'\n\t" +
+                "Tag:     '{}'", EMOTE_TAG_PATTERN, emoteTag);
             return ImmutableSet.of();
         }
+
         // ex: 100:10-20,21-31/200:41-51,52-62/400:70-80
         Set<EmoteTag> tags = SECTION.splitToList(emoteTag)      // ["100:10-20,21-31", "200:41-51,52-62", "400:70-80"]
-                .stream()                                       // "100:10-20,21-31"
-                .map(EMOTE::splitToList)                              // ["100", "10-20,21-31"]
-                .map(l -> ImmutableList.<String>builder()
-                        .add(l.get(0))
-                        .addAll(INSTANCES.split(l.get(1)))
-                        .build())                           // ["100", "10-20", "21-31"]
-                .flatMap(l ->
-                        l.subList(1, l.size())
-                                .stream()
-                                .map(s ->
-                                        ImmutableList.<String>builder()
-                                                .add(l.get(0))
-                                                .addAll(RANGE.split(s))
-                                                .build()) // ["100, "10", "20"], ["100", "21", "31"]
-                )
-                .map(l -> {
-                            try {
-                                EmoteTag t = new EmoteTag(
-                                        Integer.parseInt(l.get(0)),
-                                        Integer.parseInt(l.get(1)),
-                                        Integer.parseInt(l.get(2)));
-                                logger.debug("Created EmoteTag: {}", t);
-                                return t;
-                            } catch (IllegalArgumentException ex) {
-                                logger.warn("Encountered invalid EmoteTag definition: {}", ex.getMessage());
-                                return null;
-                            }
-                        }
-                )
-                .filter(e -> e != null)
-                .collect(collectingAndThen(
-                        toSet(),
-                        ImmutableSortedSet::copyOf
-                ));
+            .stream()                                       // "100:10-20,21-31"
+            .map(EMOTE::splitToList)                              // ["100", "10-20,21-31"]
+            .map(l -> ImmutableList.<String>builder()
+                .add(l.get(0))
+                .addAll(INSTANCES.split(l.get(1)))
+                .build())                           // ["100", "10-20", "21-31"]
+            .flatMap(l ->
+                l.subList(1, l.size())
+                    .stream()
+                    .map(s ->
+                        ImmutableList.<String>builder()
+                            .add(l.get(0))
+                            .addAll(RANGE.split(s))
+                            .build()) // ["100, "10", "20"], ["100", "21", "31"]
+            )
+            .map(l -> {
+                    try {
+                        EmoteTag t = new EmoteTag(
+                            Integer.parseInt(l.get(0)),
+                            Integer.parseInt(l.get(1)),
+                            Integer.parseInt(l.get(2)));
+                        logger.debug("Created EmoteTag: {}", t);
+                        return t;
+                    } catch (IllegalArgumentException ex) {
+                        logger.warn("Encountered invalid EmoteTag definition: {}", ex.getMessage());
+                        return null;
+                    }
+                }
+            )
+            .filter(e -> e != null)
+            .collect(collectingAndThen(
+                toSet(),
+                ImmutableSortedSet::copyOf
+            ));
         logger.debug("Converted emote tag to List:\n\t" +
-                "Tag:  {}\n\t" +
-                "List: {}", emoteTag, tags);
+            "Tag:  {}\n\t" +
+            "List: {}", emoteTag, tags);
 
         return tags;
 

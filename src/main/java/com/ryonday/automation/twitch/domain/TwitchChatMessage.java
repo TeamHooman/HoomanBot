@@ -3,9 +3,11 @@ package com.ryonday.automation.twitch.domain;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Sets;
+import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Entity
 @Table(name = "twitch_chat_messages")
 public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
+
+    private final static Logger logger = LoggerFactory.getLogger( TwitchChatMessage.class );
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -77,7 +81,6 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
 
     public TwitchChatMessage setChannel(TwitchChannel channel) {
         this.channel = channel;
-        channel.addChat(this);
         return this;
     }
 
@@ -87,7 +90,6 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
 
     public TwitchChatMessage setNickname(Nickname nickname) {
         this.nickname = nickname;
-        nickname.addChat(this);
         return this;
     }
 
@@ -104,6 +106,13 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
         return ImmutableSortedSet.copyOf(chatEmotes);
     }
 
+    public TwitchChatMessage setChatEmotes( Collection<EmoteInChat> chatEmotes ) {
+        this.chatEmotes.clear();
+        this.addChatEmotes( chatEmotes );
+        return this;
+    }
+
+
     public TwitchChatMessage addChatEmotes(Collection<EmoteInChat> chatEmotes) {
         if (chatEmotes != null) {
             chatEmotes.forEach(this::addChatEmote);
@@ -113,7 +122,7 @@ public class TwitchChatMessage implements Comparable<TwitchChatMessage> {
 
     public TwitchChatMessage addChatEmote(EmoteInChat emoteInChat) {
         if (emoteInChat != null && !chatEmotes.contains(emoteInChat)) {
-            chatEmotes.add(emoteInChat);
+            this.chatEmotes.add(emoteInChat);
             emoteInChat.setChat(this);
         }
         return this;

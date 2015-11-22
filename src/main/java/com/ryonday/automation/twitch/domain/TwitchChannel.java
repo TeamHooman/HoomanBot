@@ -3,6 +3,8 @@ package com.ryonday.automation.twitch.domain;
 import com.beust.jcommander.internal.Sets;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSortedSet;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -24,7 +26,8 @@ public class        TwitchChannel implements Comparable<TwitchChannel>{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "channel", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH}, mappedBy = "channel", fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<TwitchChatMessage> chats = Sets.newHashSet();
 
     public Long getId() {

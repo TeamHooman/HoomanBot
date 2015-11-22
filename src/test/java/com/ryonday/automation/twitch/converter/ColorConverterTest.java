@@ -4,9 +4,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import javafx.scene.paint.Color;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 public class ColorConverterTest {
 
@@ -15,48 +16,54 @@ public class ColorConverterTest {
     ColorConverter cc = new ColorConverter();
 
     @Test
-    public void testWHISKYTANGFOXTROT() throws Exception {
+    public void testItReturnsNullOnNullInput() throws Exception {
+        String s = cc.convertToDatabaseColumn( null );
+        assertNull( s );
 
-        String color = "#9ACD32";
-        Color c = Color.decode( color );
-        logger.info( "Color: {}", c );
+        Color c = cc.convertToEntityAttribute( null );
+        assertNull( c );
+    }
 
+    @Test
+    public void testItReturnsBlackOnInvalidInput() throws Exception {
 
+        Color c = cc.convertToEntityAttribute( "GIBBERISH" );
+        assertEquals( c, Color.BLACK );
     }
 
     @Test
     public void testConvertToString() throws Exception {
-        Color c = new Color(255, 0, 0 );
+        Color c = Color.rgb(255, 0, 0 );
         String cs = cc.convertToDatabaseColumn( c );
-        assertEquals( "FFFF0000", cs );
+        assertEquals( "#FF0000", cs );
 
-        c = new Color( 0, 255, 0 );
+        c = Color.rgb( 0, 255, 0 );
         cs = cc.convertToDatabaseColumn( c );
-        assertEquals( "FF00FF00", cs );
+        assertEquals( "#00FF00", cs );
 
-        c = new Color( 0, 1, 255 );
+        c = Color.rgb( 0, 1, 255 );
         cs = cc.convertToDatabaseColumn( c );
-        assertEquals( "FF0001FF", cs );
+        assertEquals( "#0001FF", cs );
     }
 
     @Test
     public void testConvertToColor() throws Exception {
-        String cs = "FFFF0000";
+        String cs = "#FF0000";
         Color c = cc.convertToEntityAttribute( cs );
-        assertEquals( 255, c.getRed() );
-        assertEquals( 0, c.getGreen() );
-        assertEquals( 0, c.getBlue() );
+        assertEquals( 1.0, c.getRed() );
+        assertEquals( 0.0, c.getGreen() );
+        assertEquals( 0.0, c.getBlue() );
 
-        cs = "FF00FF00";
+        cs = "#00FF00";
         c = cc.convertToEntityAttribute( cs );
-        assertEquals( 0, c.getRed() );
-        assertEquals( 255, c.getGreen() );
-        assertEquals( 0, c.getBlue() );
+        assertEquals( 0.0, c.getRed() );
+        assertEquals( 1.0, c.getGreen() );
+        assertEquals( 0.0, c.getBlue() );
 
-        cs = "FF0101FF";
+        cs = "#0101FF";
         c = cc.convertToEntityAttribute( cs );
-        assertEquals( 1, c.getRed() );
-        assertEquals( 1, c.getGreen() );
-        assertEquals( 255, c.getBlue() );
+        assertEquals( 1, c.getRed() * 255, .0000000591389835 ); // :|
+        assertEquals( 1, c.getGreen() * 255, .0000000591389835 );
+        assertEquals( 1.0, c.getBlue() );
     }
 }

@@ -19,7 +19,7 @@ public class EmoteInChat {
     @Column(name = "version", columnDefinition = "integer DEFAULT 0", nullable = false)
     private Long version;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.DETACH}, optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id", nullable = false, updatable = false)
     private TwitchChatMessage chat;
 
@@ -58,6 +58,7 @@ public class EmoteInChat {
     public EmoteInChat setChat(TwitchChatMessage chat) {
         if (chat != null) {
             this.setChat(chat);
+            chat.addChatEmote( this );
         }
         return this;
     }
@@ -68,7 +69,6 @@ public class EmoteInChat {
 
     public EmoteInChat setEmote(Emote emote) {
         this.emote = emote;
-        emote.addUse(this);
         return this;
     }
 

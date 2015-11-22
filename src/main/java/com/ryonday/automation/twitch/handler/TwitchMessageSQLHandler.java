@@ -1,10 +1,10 @@
 package com.ryonday.automation.twitch.handler;
 
 import com.google.common.base.Preconditions;
-import com.ryonday.automation.twitch.domain.Nickname;
-import com.ryonday.automation.twitch.domain.TwitchChannel;
-import com.ryonday.automation.twitch.domain.TwitchChatMessage;
+import com.ryonday.automation.twitch.domain.*;
 import com.ryonday.automation.twitch.repo.*;
+import com.ryonday.automation.twitch.util.EmoteTagParser;
+import javafx.scene.paint.Color;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.slf4j.Logger;
@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class TwitchMessageSQLHandler extends ListenerAdapter {
@@ -60,7 +61,7 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
                             .setName(chanName))
                 );
 
-            logger.info("channel: {}", channel );
+            logger.info("channel: {}", channel);
             Nickname nickname = nickRepo
                 .findOne(twitchUserId)
                 .orElseGet(
@@ -70,33 +71,34 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
                             .setNickname(messageEvent.getTags().get("display-name").toLowerCase()))
                 );
 
-            logger.info("nickname: {}", nickname );
-//        Set<EmoteInChat> emotesInChat = EmoteTagParser
-//            .parseEmoteTag(emoteString)
-//            .stream()
-//            .map(tag -> new EmoteInChat()
-//                .setStartIndex(tag.startIndex)
-//                .setEndIndex(tag.endIndex)
-//                .setEmote(emoteRepo
-//                    .findOne(tag.id)
-//                    .orElseGet(() ->
-//                        emoteRepo.save(
-//                            new Emote()
-//                                .setId(tag.id)
-//                                .setEmote(
-//                                    text.substring(
-//                                        tag.startIndex,
-//                                        tag.endIndex))))))
-//            .collect(Collectors.toSet());
+            logger.info("nickname: {}", nickname);
+            Set<EmoteInChat> emotesInChat = EmoteTagParser
+                .parseEmoteTag(emoteString)
+                .stream()
+                .map(tag -> new EmoteInChat()
+                    .setStartIndex(tag.startIndex)
+                    .setEndIndex(tag.endIndex)
+                    .setEmote(emoteRepo
+                        .findOne(tag.id)
+                        .orElseGet(() ->
+                            emoteRepo.save(
+                                new Emote()
+                                    .setId(tag.id)
+                                    .setEmote(
+                                        text.substring(
+                                            tag.startIndex,
+                                            tag.endIndex + 1 /* Bleh */))))))
+                .collect(Collectors.toSet());
 
 
-            chatRepo.save(
-                new TwitchChatMessage()
-                    .setChannel(channel)
-                    .setNickname(nickname)
-                    .setText(text)
-                    .setTimestamp(LocalDateTime.now())
-                    .setNickColor(Color.decode(nickColor)));
+            chatRepo.save(new TwitchChatMessage()
+                .setChannel(channel)
+                .setNickname(nickname)
+                .setNickColor(Color.web(nickColor))
+                .setText(text)
+                .addChatEmotes(emotesInChat)
+                .setTimestamp(LocalDateTime.now()));
+
 
         } catch (Exception ex) {
             logger.error("Received exception.", ex);

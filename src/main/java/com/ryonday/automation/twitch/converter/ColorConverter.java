@@ -1,44 +1,42 @@
 package com.ryonday.automation.twitch.converter;
 
+import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.awt.*;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Converter(autoApply = true)
 public class ColorConverter implements AttributeConverter<Color, String> {
-    /**
-     * Converts the value stored in the entity attribute into the
-     * data representation to be stored in the database.
-     *
-     * @param attribute the entity attribute value to be converted
-     * @return the converted data to be stored in the database column
-     */
+    private final static Logger logger = LoggerFactory.getLogger(ColorConverter.class);
+
     @Override
-    public String convertToDatabaseColumn(Color attribute) {
-        if( attribute == null ) {
+    public String convertToDatabaseColumn(Color color) {
+        if (color == null) {
+            logger.warn("Cannot convert null color.");
             return null;
         }
-        return "#" + Integer.toHexString( attribute.getRGB()).toUpperCase();
+
+        return String.format("#%02X%02X%02X",
+            (int) (color.getRed() * 255),
+            (int) (color.getGreen() * 255),
+            (int) (color.getBlue() * 255));
     }
 
-    /**
-     * Converts the data stored in the database column into the
-     * value to be stored in the entity attribute.
-     * Note that it is the responsibility of the converter writer to
-     * specify the correct dbData type for the corresponding column
-     * for use by the JDBC driver: i.e., persistence providers are
-     * not expected to do such type conversion.
-     *
-     * @param dbData the data from the database column to be converted
-     * @return the converted value to be stored in the entity attribute
-     */
     @Override
-    public Color convertToEntityAttribute(String dbData) {
-        if( isNullOrEmpty( dbData )) {
+    public Color convertToEntityAttribute(String colorString) {
+        if (isNullOrEmpty(colorString)) {
             return null;
         }
-        return Color.decode( dbData );
+
+        try {
+            return Color.web(colorString);
+        } catch( Exception ex ) {
+            logger.error("Could not parse color String from database: {}", colorString );
+            return Color.BLACK;
+        }
     }
 }

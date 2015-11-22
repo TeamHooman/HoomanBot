@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
+
 @ConfigurationProperties(prefix = "twitch")
 @org.springframework.context.annotation.Configuration
 public class TwitchConfig {
@@ -97,40 +98,44 @@ public class TwitchConfig {
     }
 
     @Bean(name = "twitchIRCConfig")
-    public Configuration twitchIRCConfig( List<Listener> listeners) {
+    public Configuration twitchIRCConfig(List<Listener> listeners) {
 
         checkArgument(!isNullOrEmpty(host));
-        checkArgument(port > 0 );
-        checkArgument( !isNullOrEmpty( nickname ) );
-        checkArgument( !isNullOrEmpty( oAuth ));
-        checkArgument( !isNullOrEmpty( autoJoin ));
-        checkArgument( listeners != null && listeners.size() > 0 );
+        checkArgument(port > 0);
+        checkArgument(!isNullOrEmpty(nickname));
+        checkArgument(!isNullOrEmpty(oAuth));
+        checkArgument(!isNullOrEmpty(autoJoin));
+        checkArgument(listeners != null && listeners.size() > 0);
 
         // Some config items from https://github.com/TheLQ/pircbotx/wiki/Twitch.tv-support
         // such as the CAP handlers and the autoNickChange/JoinOnWhoEnabled settings.
 
         Configuration config = new Configuration.Builder()
-                .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
-                .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
-                .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
-                .setName(nickname)
-                .setAutoNickChange(false)
-                .setOnJoinWhoEnabled(false)
-                .setAutoReconnect(true)
-                .addAutoJoinChannels(Splitter.on(',').trimResults().omitEmptyStrings().split(autoJoin))
-                .setServerPassword(oAuth)
-                .addListeners( listeners )
-                .buildForServer(host, port);
+            .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
+            .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
+            .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
+            .setName(nickname)
+            .setAutoNickChange(false)
+            .setOnJoinWhoEnabled(false)
+            .setAutoReconnect(true)
+            .addAutoJoinChannels(
+                Splitter.on(',')
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(autoJoin))
+            .setServerPassword(oAuth)
+            .addListeners(listeners)
+            .buildForServer(host, port);
 
 
-        logger.info( "Constructed Twitch IRC Configuration: {}", config );
+        logger.info("Constructed Twitch IRC Configuration: {}", config);
 
         return config;
     }
 
-    @Bean( name="bot")
-    public PircBotX bot( Configuration config ) {
-        PircBotX bot = new PircBotX( config );
+    @Bean(name = "bot")
+    public PircBotX bot(Configuration config) {
+        PircBotX bot = new PircBotX(config);
         return bot;
     }
 }

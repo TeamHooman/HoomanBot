@@ -3,6 +3,8 @@ package com.ryonday.automation.twitch.domain;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Sets;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -25,7 +27,8 @@ public class Emote {
     @Column(name = "emote", nullable = false, updatable = false)
     private String emote;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "emote")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.LAZY, mappedBy = "emote")
+    @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<EmoteInChat> uses = Sets.newHashSet();
 
     public Long getId() {
