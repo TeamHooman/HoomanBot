@@ -17,3 +17,5 @@ gradle
 
 # IntelliJ
 /out/
+tmp
+

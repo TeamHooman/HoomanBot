@@ -5,6 +5,8 @@ import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
+import com.philips.lighting.model.PHBridgeConfiguration;
+import com.philips.lighting.model.PHBridgeResourcesCache;
 import com.philips.lighting.model.PHHueParsingError;
 import com.ryonday.automation.hue.utils.HueUtils;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.ryonday.automation.hue.utils.HueUtils.apToString;
 
 @Service
 public class HueListener implements PHSDKListener {
@@ -23,7 +24,7 @@ public class HueListener implements PHSDKListener {
 
     private final PHHueSDK hueSdk;
 
-    private final static Joiner JOINER = Joiner.on(", ").useForNull("<NULL>");
+    private final static Joiner JOINER = Joiner.on(", ").skipNulls();
 
     public HueListener() {
         checkNotNull(this.hueSdk = PHHueSDK.getInstance());
@@ -36,27 +37,29 @@ public class HueListener implements PHSDKListener {
 
     @Override
     public void onBridgeConnected(PHBridge bridge, String username) {
-        logger.info("onBridgeConnected(bridgeId = {}, username = {}) at IP address {}",
-                bridge.getResourceCache().getBridgeConfiguration().getBridgeID(), username, bridge.getResourceCache().getBridgeConfiguration().getIpAddress());
-
+        PHBridgeResourcesCache cache = bridge.getResourceCache();
+        PHBridgeConfiguration config = cache.getBridgeConfiguration();
         hueSdk.setSelectedBridge(bridge);
         hueSdk.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
 
-        // Here it is recommended to set your connected bridge in your sdk object (as above) and start the heartbeat.
-        // At this point you are connected to a bridge so you should pass control to your main program/activity.
-        // The username is generated randomly by the bridge.
-        // Also it is recommended you store the connected IP Address/ Username in your app here.  This will allow easy automatic connection on subsequent use.
+        logger.info("Connected to Hue Bridge:\n\t" +
+                "Username: {}\n\t" +
+                "Bridge:   {}",
+            username,
+            HueUtils.toString(bridge)
+        );
+
     }
 
     @Override
     public void onAuthenticationRequired(PHAccessPoint accessPoint) {
-        logger.info("onAuthenticationRequired({})", apToString(accessPoint));
+        logger.info("onAuthenticationRequired({})", HueUtils.toString(accessPoint));
         hueSdk.startPushlinkAuthentication(accessPoint);
     }
 
     @Override
     public void onAccessPointsFound(List<PHAccessPoint> accessPoints) {
-        logger.info("onAccessPointsFound({})", JOINER.join(accessPoints.stream().map(HueUtils::apToString).iterator()));
+        logger.info("onAccessPointsFound({})", JOINER.join(accessPoints.stream().map(HueUtils::toString).iterator()));
 
         // Choosing first :/
 
@@ -79,7 +82,7 @@ public class HueListener implements PHSDKListener {
 
     @Override
     public void onConnectionLost(PHAccessPoint accessPoint) {
-        logger.info("onConnectionLost({})", apToString( accessPoint));
+        logger.info("onConnectionLost({})", HueUtils.toString(accessPoint));
 
     }
 
