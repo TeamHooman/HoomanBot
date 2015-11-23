@@ -3,7 +3,8 @@ spring:
       cache-names: twitch
       type: guava
   profiles:
-      active: twitch,twitter,hue
+#      active: twitch,hue,sql,twitter,markov
+      active: twitch,hue
   jpa:
       show-sql: true
       hibernate:

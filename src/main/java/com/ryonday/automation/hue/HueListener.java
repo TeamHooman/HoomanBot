@@ -5,7 +5,6 @@ import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHBridgeConfiguration;
 import com.philips.lighting.model.PHBridgeResourcesCache;
 import com.philips.lighting.model.PHHueParsingError;
 import com.ryonday.automation.hue.utils.HueUtils;
@@ -38,7 +37,6 @@ public class HueListener implements PHSDKListener {
     @Override
     public void onBridgeConnected(PHBridge bridge, String username) {
         PHBridgeResourcesCache cache = bridge.getResourceCache();
-        PHBridgeConfiguration config = cache.getBridgeConfiguration();
         hueSdk.setSelectedBridge(bridge);
         hueSdk.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
 
