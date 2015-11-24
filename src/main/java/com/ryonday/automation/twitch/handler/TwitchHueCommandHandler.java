@@ -25,7 +25,14 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TwitchHueCommandHandler.class);
 
-    private final static String COMMAND = "!hue ";
+    private final static String COMMAND_HUE = "!hue ";
+    private final static String COMMAND_OFF = "!off ";
+    private final static String COMMAND_ON = "!on ";
+    private final static String COMMAND_BRIGHTEN = "!brighter ";
+    private final static String COMMAND_DARKEN = "!darker ";
+    private final static String COMMAND_SATURATE = "!saturate ";
+    private final static String COMMAND_DESATURATE = "!desaturate ";
+    private final static String COMMAND_CYCLE = "!desaturate ";
 
     private final static CharMatcher snippy = CharMatcher.WHITESPACE;
 
@@ -44,12 +51,12 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
 
         String message = snippy.trimAndCollapseFrom(nullToEmpty(messageEvent.getMessage()), ' ');
 
-        if (!nullToEmpty(message).startsWith(COMMAND)) {
+        if (!nullToEmpty(message).startsWith(COMMAND_HUE)) {
             logger.info("Not a command: {}", message);
             return;
         }
 
-        List<String> command = splitty.splitToList(message.substring(COMMAND.length()));
+        List<String> command = splitty.splitToList(message.substring(COMMAND_HUE.length()));
 
         if (command.size() == 2) { // It's $LIGHT {$COLORNAME, $HEX, $COMMAND}
             try {
@@ -70,7 +77,5 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
         } else {
             logger.warn("Unrecognized command format: {}", command);
         }
-
-
     }
 }

@@ -20,6 +20,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'spring-boot'
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'antlr'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -55,8 +56,9 @@ dependencies {
     compile 'it.unimi.dsi:fastutil:+'
     compile 'javax.inject:javax.inject:+'
 
+    antlr 'org.antlr:antlr4:4.5+'
     compile 'com.beust:jcommander:+'
-    compile 'org.parboiled:parboiled-java:+'
+
 
 
     compile files("$rootProject.projectDir/libs/huelocalsdk.jar")
@@ -67,6 +69,22 @@ dependencies {
 }
 
 compileJava.dependsOn(processResources)
+
+ideaModule {
+    // Because the Gradle IDEA plugin is a piece of shit (https://issues.gradle.org/browse/GRADLE-1174)
+    // and also the IDEA exclusion system is a piece of shit. https://youtrack.jetbrains.com/issue/IDEA-104847
+    excludeDirs = [
+            file(".gradle"),
+            file("$buildDir/classes"),
+            file("$buildDir/dependency-cache"),
+            file("$buildDir/libs"),
+            file("$buildDir/reports"),
+            file("$buildDir/resources"),
+            file("$buildDir/test-results"),
+            file("$buildDir/temp"),
+            file("$buildDir/tmp")
+    ] as Set
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.8'
