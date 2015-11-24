@@ -70,22 +70,31 @@ dependencies {
 
 compileJava.dependsOn(processResources)
 
-ideaModule {
-    // Because the Gradle IDEA plugin is a piece of shit (https://issues.gradle.org/browse/GRADLE-1174)
-    // and also the IDEA exclusion system is a piece of shit. https://youtrack.jetbrains.com/issue/IDEA-104847
-    excludeDirs = [
-            file(".gradle"),
-            file("$buildDir/classes"),
-            file("$buildDir/dependency-cache"),
-            file("$buildDir/libs"),
-            file("$buildDir/reports"),
-            file("$buildDir/resources"),
-            file("$buildDir/test-results"),
-            file("$buildDir/temp"),
-            file("$buildDir/tmp")
-    ] as Set
+idea {
+    module {
+        // Customized exclude directories:
+        //  * The Gradle Antlr plugin outputs into build/generated-src by default
+        //  * The Gradle IDEA plugin has an idea of what excludes SHOULD be[1]
+        //    and when it autogenerates the .iml it fucks it all up and even overwrites your preferences.
+        //  * The IDEA exclusion system is a conspirator [2]
+        //
+        // [1]  The Gradle IDEA plugin is a piece of shit (https://issues.gradle.org/browse/GRADLE-1174)
+        //          But Gradle is also more of a piece of shit because they change their syntax around so it was harder to configure this: https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaModule.html
+        // [2]  The IDEA exclusion system is a piece of shit because something can be marked as both a source AND excluded, and excluded takes priority. https://youtrack.jetbrains.com/issue/IDEA-104847. untouched by a dev EVER.
+        excludeDirs = [
+                file(".gradle"),
+                file("$buildDir/classes"),
+                file("$buildDir/dependency-cache"),
+                file("$buildDir/libs"),
+                file("$buildDir/reports"),
+                file("$buildDir/resources"),
+                file("$buildDir/test-results"),
+                file("$buildDir/temp"),
+                file("$buildDir/tmp")
+        ] as Set
+    }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
+    gradleVersion = '2.9'
 }
