@@ -73,14 +73,10 @@ compileJava.dependsOn(processResources)
 idea {
     module {
         // Customized exclude directories:
-        //  * The Gradle Antlr plugin outputs into build/generated-src by default
-        //  * The Gradle IDEA plugin has an idea of what excludes SHOULD be[1]
-        //    and when it autogenerates the .iml it fucks it all up and even overwrites your preferences.
-        //  * The IDEA exclusion system is a conspirator [2]
-        //
-        // [1]  The Gradle IDEA plugin is a piece of shit (https://issues.gradle.org/browse/GRADLE-1174)
-        //          But Gradle is also more of a piece of shit because they change their syntax around so it was harder to configure this: https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaModule.html
-        // [2]  The IDEA exclusion system is a piece of shit because something can be marked as both a source AND excluded, and excluded takes priority. https://youtrack.jetbrains.com/issue/IDEA-104847. untouched by a dev EVER.
+        //  * The Gradle Antlr plugin adds a source dir (and outputs to)  $buildDir/generated-src/antlr/main by default
+        //  * The Gradle IDEA plugin is a piece of shit and has an idea of what excludes SHOULD be (https://issues.gradle.org/browse/GRADLE-1174).
+        //    and when it autogenerates the .iml it fucks it all up and even overwrites your stated preferences.
+        //  * The IDEA exclusion system is a piece of shit co-conspirator and allows tagging of directories as both source AND exclude (https://youtrack.jetbrains.com/issue/IDEA-104847).
         excludeDirs = [
                 file(".gradle"),
                 file("$buildDir/classes"),
