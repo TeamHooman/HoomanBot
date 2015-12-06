@@ -11,14 +11,25 @@ grammar TwitchEmote;
  package com.ryonday.automation.twitch.antlr;
 }
 
-emoteString : emote('/'emote)* ;
 
-emote : EmoteId':'indeces(','indeces)* ;
-indeces : StartIndex'-'EndIndex ;
 
-EmoteId : INT ;
-StartIndex: INT ;
-EndIndex: INT ;
+emoteString : emote('/'emote)*;
+emote: emoteid':'indeces(','indeces)*;
+indeces: startindex'-'endindex;
+emoteid: INT;
+startindex: INT;
+endindex: INT;
 
-INT: [0-9]+ ;
+INT: [0-9]+;
+
+//emoteString : emote('/'emote)* ;
+//emote : EMOTEID':'indeces(','indeces)* ;
+//indeces : STARTINDEX'-'ENDINDEX ;
+//
+//
+//EMOTEID : INT;
+//STARTINDEX: INT;
+//ENDINDEX: INT;
+//
+//INT: [0-9]+;
 

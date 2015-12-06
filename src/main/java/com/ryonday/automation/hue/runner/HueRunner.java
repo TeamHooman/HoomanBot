@@ -3,6 +3,7 @@ package com.ryonday.automation.hue.runner;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
+import com.ryonday.automation.hue.utils.HueUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class HueRunner implements ApplicationRunner {
         PHHueSDK hueSDK = PHHueSDK.getInstance();
 
         if( accessPoint != null ) {
-            logger.info("Attempting connect to access point: {}", accessPoint );
+            logger.info("Attempting connect to access point: {}", HueUtils.toString(accessPoint) );
             hueSDK.connect( accessPoint );
         } else {
             logger.info("Beginning Hue Bridge Search...");

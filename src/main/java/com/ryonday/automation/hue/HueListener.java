@@ -2,6 +2,7 @@ package com.ryonday.automation.hue;
 
 import com.google.common.base.Joiner;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
+import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
@@ -69,7 +70,10 @@ public class HueListener implements PHSDKListener {
     @Override
     public void onError(int i, String s) {
         logger.info("onError({}, {})", i, s);
-
+        if( i == 46 ) { // Bridge not responding
+            PHBridgeSearchManager sm = (PHBridgeSearchManager) hueSdk.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+            sm.search(true, true);
+        }
     }
 
     @Override

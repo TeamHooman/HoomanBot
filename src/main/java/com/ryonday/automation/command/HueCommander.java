@@ -8,6 +8,7 @@ import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.utilities.PHUtilities;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
+import com.ryonday.automation.hue.utils.HueUtils;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class HueCommander {
     }
 
     private Map<String, PHLight> getLights() {
-        return hueSdk
+        Map<String, PHLight> lights =  hueSdk
             .getSelectedBridge()
             .getResourceCache()
             .getAllLights()
@@ -47,6 +48,8 @@ public class HueCommander {
                         light -> light),
                     ImmutableMap::copyOf)
             );
+        logger.debug("Available Lights: {}", lights);
+        return lights;
     }
 
     private Optional<PHLight> lightForName(String name) {
@@ -54,24 +57,23 @@ public class HueCommander {
             return Optional.empty();
         }
 
-        Map<String, PHLight> wat = getLights();
-        logger.info("Lights: {}", wat);
+        Map<String, PHLight> lights = getLights();
 
-        return Optional.ofNullable(wat.get(name));
+        return Optional.ofNullable(lights.get(name));
     }
 
     private void updateLight(PHLight light, PHLightState state) {
+        if (state == null) {
+            logger.warn("Attempt to set null status for light '{}'", HueUtils.toString(light));
+            return;
+        }
+
+        logger.info("WTFFFFF");
+
         hueSdk.getSelectedBridge().updateLightState(light, state);
     }
 
     private void updateLight(String name, PHLightState state) {
-
-        if (state == null) {
-            logger.warn("Attempt to set null status for light:\n\t" +
-                "Light name:    {}\n\t" +
-                "Desired state: {}", name, state);
-        }
-
         Optional<PHLight> lightOpt = lightForName(name);
 
         if (!lightOpt.isPresent()) {
@@ -90,8 +92,7 @@ public class HueCommander {
         Optional<PHLight> lightOpt = lightForName(name);
 
         if (!lightOpt.isPresent()) {
-            logger.warn("Attempt to update unrecognized light:\n\t" +
-                "Light name:    {}", name);
+            logger.warn("Attempt to update unrecognized light '{}'.", name);
             return;
         }
 
@@ -103,7 +104,7 @@ public class HueCommander {
     public void color(String name, Color color) {
 
         if (color == null) {
-            logger.warn("requested color change for bulb '{}' with non-existent color.");
+            logger.warn("requested null color change for bulb '{}'.", name);
             return;
         }
 
@@ -123,6 +124,7 @@ public class HueCommander {
             PHLightState state = new PHLightState();
             state.setX(xy[0]);
             state.setY(xy[1]);
+            state.setEffectMode(PHLight.PHLightEffectMode.EFFECT_NONE);
             return state;
         });
     }
@@ -143,15 +145,48 @@ public class HueCommander {
 
     }
 
-    public void brighter(String name) {
+    public void brightness( String name, int brightness ) {
+        logger.info("Brightness change requested:\n\t" +
+            "Light:      {}\n\t" +
+            "Brightness: {}", name, brightness);
+        updateLight(name, l -> {
+            PHLightState currentState = l.getLastKnownLightState();
+            currentState.setBrightness( brightness, true);
+            return currentState;
+        });
+    }
 
+    private void incrementBrightness( String name, int increment ) {
+
+        updateLight(name, l -> {
+            PHLightState currentState = l.getLastKnownLightState();
+            int currentBrightness = currentState.getBrightness();
+            int newBrightness = currentBrightness + increment;
+            logger.info("Brightness increment requested:\n\t" +
+                "Light:              {}\n\t" +
+                "Increment:          {}\n\t" +
+                "Current Brightness: {}\n\t" +
+                "Desired Brightness: {}", name, increment, currentBrightness, newBrightness);
+            currentState.setBrightness( (currentState.getBrightness() + increment), true);
+            return currentState;
+        });
+    }
+    public void brighter(String name) {
+        incrementBrightness( name, 50);
     }
 
     public void darker(String name) {
+        incrementBrightness( name, -50);
     }
 
     public void cycle(String name) {
-
+        logger.info("Color Loop requested for light '{}'.", name);
+        updateLight(name, l -> {
+            String modelNumber = l.getModelNumber();
+            PHLightState currentState = l.getLastKnownLightState();
+            currentState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_COLORLOOP);
+            return currentState;
+        });
     }
 
 }

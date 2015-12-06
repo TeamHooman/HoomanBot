@@ -25,14 +25,15 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TwitchHueCommandHandler.class);
 
-    private final static String COMMAND_HUE = "!hue ";
-    private final static String COMMAND_OFF = "!off ";
-    private final static String COMMAND_ON = "!on ";
-    private final static String COMMAND_BRIGHTEN = "!brighter ";
-    private final static String COMMAND_DARKEN = "!darker ";
-    private final static String COMMAND_SATURATE = "!saturate ";
-    private final static String COMMAND_DESATURATE = "!desaturate ";
-    private final static String COMMAND_CYCLE = "!desaturate ";
+    private final static String COMMAND_HUE = "!hue";
+    private final static String COMMAND_OFF = "!off";
+    private final static String COMMAND_ON = "!on";
+    private final static String COMMAND_BRIGHTEN = "!brighter";
+    private final static String COMMAND_BRIGHTNESS = "!brightness";
+    private final static String COMMAND_DARKEN = "!darker";
+    private final static String COMMAND_SATURATE = "!saturate";
+    private final static String COMMAND_DESATURATE = "!desaturate";
+    private final static String COMMAND_CYCLE = "!cycle";
 
     private final static CharMatcher snippy = CharMatcher.WHITESPACE;
 
@@ -49,33 +50,55 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
     public void onMessage(MessageEvent messageEvent) throws Exception {
         logger.debug("Received Channel Message: {}", messageEvent);
 
-        String message = snippy.trimAndCollapseFrom(nullToEmpty(messageEvent.getMessage()), ' ');
+        String message = snippy.trimAndCollapseFrom(nullToEmpty(messageEvent.getMessage()), ' ').toLowerCase();
 
-        if (!nullToEmpty(message).startsWith(COMMAND_HUE)) {
-            logger.info("Not a command: {}", message);
-            return;
+        List<String> command = splitty.splitToList(message);
+
+        if( command.size() < 2 ) {
+            logger.warn("Invalid command received: {}", message);
         }
 
-        List<String> command = splitty.splitToList(message.substring(COMMAND_HUE.length()));
+        String lightName = command.get( 1 );
 
-        if (command.size() == 2) { // It's $LIGHT {$COLORNAME, $HEX, $COMMAND}
-            try {
-                hueCommander.color(
-                    command.get(0),
-                    Color.web(command.get(1)));
-            } catch (Exception ex) {
-                logger.error("Error while parsing command: {}, {}", command, ex);
-            }
-
-        } else if (command.size() == 4) { // It's $LIGHT $RED $GREEN $BLUE
-            hueCommander.color(
-                command.get(0),
-                Color.rgb(Integer.parseInt(command.get(1)),
-                    Integer.parseInt(command.get(2)),
-                    Integer.parseInt(command.get(3))
-                ));
-        } else {
-            logger.warn("Unrecognized command format: {}", command);
+        switch (command.get(0)) {
+            case COMMAND_HUE:
+                if (command.size() == 3) {
+                    hueCommander.color(
+                        lightName,
+                        Color.web(command.get(2)));
+                } else if (command.size() == 5) {
+                    hueCommander.color(
+                        lightName,
+                        Color.rgb(Integer.parseInt(command.get(2)),
+                            Integer.parseInt(command.get(3)),
+                            Integer.parseInt(command.get(4))
+                        ));
+                } else {
+                    logger.warn("Invalid command received: {}", message);
+                }
+                break;
+            case COMMAND_ON:
+                hueCommander.on( lightName );
+                break;
+            case COMMAND_OFF:
+                hueCommander.off( lightName );
+                break;
+            case COMMAND_BRIGHTNESS:
+                hueCommander.brightness( lightName,
+                    Integer.parseInt(command.get(2)));
+                break;
+            case COMMAND_BRIGHTEN:
+                hueCommander.brighter( lightName );
+                break;
+            case COMMAND_DARKEN:
+                hueCommander.darker(lightName );
+                break;
+            case COMMAND_CYCLE:
+                hueCommander.cycle( lightName);
+                break;
+            default:
+                logger.warn("Invalid command received: {}", message);
+                break;
         }
     }
 }
