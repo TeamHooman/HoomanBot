@@ -28,9 +28,9 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
     private final static String COMMAND_HUE = "!hue";
     private final static String COMMAND_OFF = "!off";
     private final static String COMMAND_ON = "!on";
-    private final static String COMMAND_BRIGHTEN = "!brighter";
+    private final static String COMMAND_BRIGHTEN = "!brighten";
     private final static String COMMAND_BRIGHTNESS = "!brightness";
-    private final static String COMMAND_DARKEN = "!darker";
+    private final static String COMMAND_DARKEN = "!darken";
     private final static String COMMAND_SATURATE = "!saturate";
     private final static String COMMAND_DESATURATE = "!desaturate";
     private final static String COMMAND_CYCLE = "!cycle";
@@ -92,6 +92,12 @@ public class TwitchHueCommandHandler extends ListenerAdapter {
                 break;
             case COMMAND_DARKEN:
                 hueCommander.darker(lightName );
+                break;
+            case COMMAND_SATURATE:
+                hueCommander.saturate( lightName );
+                break;
+            case COMMAND_DESATURATE:
+                hueCommander.desaturate( lightName );
                 break;
             case COMMAND_CYCLE:
                 hueCommander.cycle( lightName);

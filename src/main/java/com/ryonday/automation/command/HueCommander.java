@@ -68,7 +68,7 @@ public class HueCommander {
             return;
         }
 
-        logger.info("WTFFFFF");
+        logger.debug("Current light state: {}", HueUtils.toString(light));
 
         hueSdk.getSelectedBridge().updateLightState(light, state);
     }
@@ -109,8 +109,16 @@ public class HueCommander {
         }
 
         logger.info("Color change requested:\n\t" +
-            "Light name:    {}\n\t" +
-            "Desired color: {}", name, color);
+            "Light name:         {}\n\t" +
+            "Desired color:      {}\n\t" +
+            "Desired hue:        {}\n\t" +
+            "Desired saturation: {}\n\t" +
+            "Desired brightness: {}\n\t" +
+            "Desired red:        {}\n\t" +
+            "Desired green:      {}\n\t" +
+            "Desired blue:       {}", name, color,
+            color.getHue(), color.getSaturation(), color.getBrightness(),
+            color.getRed(), color.getGreen(), color.getBlue());
 
         updateLight(name, l -> {
             String modelNumber = l.getModelNumber();
@@ -167,7 +175,7 @@ public class HueCommander {
                 "Increment:          {}\n\t" +
                 "Current Brightness: {}\n\t" +
                 "Desired Brightness: {}", name, increment, currentBrightness, newBrightness);
-            currentState.setBrightness( (currentState.getBrightness() + increment), true);
+            currentState.setBrightness( currentBrightness + increment, true);
             return currentState;
         });
     }
@@ -179,10 +187,51 @@ public class HueCommander {
         incrementBrightness( name, -50);
     }
 
+    private void incrementSaturation( String name, int increment) {
+        updateLight(name, l -> {
+            PHLightState currentState = l.getLastKnownLightState();
+            float x = currentState.getX();
+            float y = currentState.getY();
+            int h = currentState.getHue();
+            int s = currentState.getSaturation();
+            int b = currentState.getBrightness();
+
+            try {
+                Color current = Color.hsb((double) h, (double) s, (double) b);
+                Color newColor = current.saturate();
+            } catch( Exception ex ) {
+                logger.info( "Exception", ex);
+            }
+
+            int currentSaturation = currentState.getSaturation();
+            int newSaturation = currentSaturation + increment;
+
+            logger.info("Saturation increment requested:\n\t" +
+                "Light:              {}\n\t" +
+//                "Current:            {}\n\t" +
+//                "New:                {}\n\t" +
+                "Increment:          {}\n\t" +
+                "Current Saturation: {}\n\t" +
+                "Desired Saturation: {}\n\t" +
+                "H/S/B:             {}/{}/{}",
+                name, /*current, newColor,*/ increment, currentSaturation, newSaturation,
+                h,s,b);
+            currentState.setSaturation( currentSaturation + increment, true);
+            return currentState;
+        });
+    }
+
+    public void saturate( String name) {
+        incrementSaturation( name, 50);
+    }
+
+    public void desaturate( String name) {
+        incrementSaturation( name, -50);
+    }
+
     public void cycle(String name) {
         logger.info("Color Loop requested for light '{}'.", name);
         updateLight(name, l -> {
-            String modelNumber = l.getModelNumber();
             PHLightState currentState = l.getLastKnownLightState();
             currentState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_COLORLOOP);
             return currentState;

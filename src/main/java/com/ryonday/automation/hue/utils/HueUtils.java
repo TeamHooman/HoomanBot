@@ -335,29 +335,38 @@ public class HueUtils {
             .add("transitionTime", state.getTransitionTime())
             .add("effectMode", state.getEffectMode())
             .add("alertMode", state.getAlertMode())
-            .add("colorMode", state.getColorMode());
-
-        switch (state.getColorMode()) {
-            case COLORMODE_XY:
-                helper.add("x", state.getX())
-                    .add("y", state.getY())
-                    .add("xIncrement", state.getIncrementX())
-                    .add("yIncrement", state.getIncrementY());
-                break;
-            case COLORMODE_CT:
-                helper.add("ct", state.getCt())
-                    .add("ctIncrement", state.getIncrementCt());
-                break;
-            case COLORMODE_HUE_SATURATION:
-                helper.add("hue", state.getHue())
-                    .add("saturation", state.getSaturation())
-                    .add("hueIncrement", state.getIncrementHue())
-                    .add("saturationIncrement", state.getIncrementSat());
-                break;
-            case COLORMODE_NONE:
-            case COLORMODE_UNKNOWN:
-                break;
-        }
+            .add("colorMode", state.getColorMode())
+            .add("x", state.getX())
+            .add("y", state.getY())
+            .add("xIncrement", state.getIncrementX())
+            .add("yIncrement", state.getIncrementY())
+            .add("ctIncrement", state.getIncrementCt())
+            .add("hue", state.getHue())
+            .add("saturation", state.getSaturation())
+            .add("hueIncrement", state.getIncrementHue())
+            .add("saturationIncrement", state.getIncrementSat())
+            ;
+//        switch (state.getColorMode()) {
+//            case COLORMODE_XY:
+//                helper.add("x", state.getX())
+//                    .add("y", state.getY())
+//                    .add("xIncrement", state.getIncrementX())
+//                    .add("yIncrement", state.getIncrementY());
+//                break;
+//            case COLORMODE_CT:
+//                helper.add("ct", state.getCt())
+//                    .add("ctIncrement", state.getIncrementCt());
+//                break;
+//            case COLORMODE_HUE_SATURATION:
+//                helper.add("hue", state.getHue())
+//                    .add("saturation", state.getSaturation())
+//                    .add("hueIncrement", state.getIncrementHue())
+//                    .add("saturationIncrement", state.getIncrementSat());
+//                break;
+//            case COLORMODE_NONE:
+//            case COLORMODE_UNKNOWN:
+//                break;
+//        }
 
         return helper.toString();
     }
@@ -405,7 +414,7 @@ public class HueUtils {
             .toString();
     }
 
-    private static String toString(PHSoftwareUpdateStatus status ) {
+    private static String toString(PHSoftwareUpdateStatus status) {
         ToStringHelper helper = toStringHelper(PHSoftwareUpdateStatus.class);
 
         if (status == null) {
