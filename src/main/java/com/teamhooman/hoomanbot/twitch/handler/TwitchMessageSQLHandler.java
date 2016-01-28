@@ -15,10 +15,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-@Profile("sql")
+@Profile("sql,twitch")
 public class TwitchMessageSQLHandler extends ListenerAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TwitchMessageSQLHandler.class);
@@ -53,6 +54,12 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
         final String emoteString = messageEvent.getTags().get("emotes");
         final String nickColor = messageEvent.getTags().get("color");
         final String text = messageEvent.getMessage();
+        final String from = messageEvent.getTags().get("display-name");
+
+        if(Objects.equals( from, messageEvent.getBot().getNick())) {
+            logger.debug("Will not store my own messages.");
+            return;
+        }
 
         try {
             chatRepo.save(
@@ -73,7 +80,7 @@ public class TwitchMessageSQLHandler extends ListenerAdapter {
                             () -> nickRepo.save(
                                 new Nickname()
                                     .setId(twitchUserId)
-                                    .setNickname(messageEvent.getTags().get("display-name").toLowerCase())))
+                                    .setNickname(from.toLowerCase())))
                     )
                     .addChatEmotes(EmoteTagParser
                         .parseEmoteTag(emoteString)

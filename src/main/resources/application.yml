@@ -23,6 +23,9 @@ twitch:
   autoJoin: "#yourmom,#anotherChannel"
   emoteUrl: http://static-cdn.jtvnw.net/emoticons/v1/%s/%s
 
+rita:
+    nfactor: 3
+
 logging:
   level:
 #    org.hibernate: DEBUG

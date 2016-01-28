@@ -50,7 +50,7 @@ dependencies {
 
     compile 'org.twitter4j:twitter4j-stream:+'
     compile 'com.twitter:twitter-text:+'
-    compile 'org.pircbotx:pircbotx:2.1-SNAPSHOT'
+    compile 'org.pircbotx:pircbotx:2.1'
 
     compile 'com.google.guava:guava:+'
     compile 'it.unimi.dsi:fastutil:+'
@@ -61,8 +61,9 @@ dependencies {
 
 
 
-    compile files("$rootProject.projectDir/libs/huelocalsdk.jar")
+    compile files("$rootProject.projectDir/libs/rita.jar")
     compile files("$rootProject.projectDir/libs/huesdkresources.jar")
+    compile files("$rootProject.projectDir/libs/huelocalsdk.jar")
 
     testCompile 'junit:junit:+'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
