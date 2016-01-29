@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import javax.net.SocketFactory;
 import javax.validation.constraints.NotNull;
 import java.net.URL;
 import java.util.List;
@@ -114,6 +115,7 @@ public class TwitchConfig {
             .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
             .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
             .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
+            .setSocketFactory(SocketFactory.getDefault())
             .setName(nickname)
             .setAutoNickChange(false)
             .setOnJoinWhoEnabled(false)

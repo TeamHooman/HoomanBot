@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class HueColorTest {
@@ -38,6 +39,18 @@ public class HueColorTest {
 
         logger.info("rgb from intColor: {}/{}/{}", r, g, b);
 
+
+    }
+
+    @Test
+    public void testIt2() throws Exception {
+        SecureRandom sr = new SecureRandom();
+
+        int x = Math.abs(sr.nextInt()) & 0x0000FFFF;
+        int y = Math.abs(sr.nextInt()) >> 16;
+        int z = Math.abs( sr.nextInt(65535));
+
+        logger.info("x={} y={} z={}", x,y,z);
 
     }
 }

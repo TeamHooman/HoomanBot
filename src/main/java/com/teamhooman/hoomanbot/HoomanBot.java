@@ -24,8 +24,6 @@ public class HoomanBot {
             .web(true)
             .build()
             .run(args);
-
-//        SpringApplication.run(TwitterHueApplication.class);
     }
 
 
