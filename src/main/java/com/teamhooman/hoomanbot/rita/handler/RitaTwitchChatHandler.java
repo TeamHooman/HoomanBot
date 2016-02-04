@@ -34,7 +34,7 @@ public class RitaTwitchChatHandler extends ListenerAdapter {
     }
 
     @Override
-    public void onMessage(MessageEvent messageEvent) throws Exception {
+    public void onMessage(MessageEvent messageEvent) {
         logger.debug("Received Channel Message: {}", messageEvent);
 
         String message = messageEvent.getMessage();
