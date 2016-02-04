@@ -4,27 +4,27 @@ spring:
       type: guava
   profiles:
 #      active: twitch,hue,sql,twitter,markov
-      active: twitch,hue
+      active: twitch,hue,rita,sql,twitter
   jpa:
       show-sql: true
       hibernate:
           ddl-auto: create-drop
 hue:
-  appName: Your Vanity App Name
-  deviceName: Your Vanity Device
-  bridgeIp: 127.0.0.1
-  username: HueAssignedHexadecimalNumber
+  appName: Twitter Hue Controller
+  deviceName: Ryon's Mac
+  bridgeIp: 192.168.0.100
+  username: 33747702122941f74d7781eb560e03
 
 twitch:
   host: irc.twitch.tv
   port: 6667
-  nickname: YourBot
-  oAuth: oauth:TwitchOAuthToken
-  autoJoin: "#yourmom,#anotherChannel"
+  nickname: HoomanBot
+  oAuth: oauth:wxtxvn3omwgxrwf2t6d8py4iofu0uc
+  autoJoin: "#ryonday"
   emoteUrl: http://static-cdn.jtvnw.net/emoticons/v1/%s/%s
 
 rita:
-    nfactor: 3
+    nFactor: 3
 
 logging:
   level:

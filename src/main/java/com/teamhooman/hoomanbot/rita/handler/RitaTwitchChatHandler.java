@@ -13,10 +13,11 @@ import rita.RiMarkov;
 import java.security.SecureRandom;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
-@Profile("rita,twitch")
+@Profile("rita")
 public class RitaTwitchChatHandler extends ListenerAdapter {
 
     private static final Logger logger = getLogger(RitaTwitchChatHandler.class);
@@ -29,7 +30,7 @@ public class RitaTwitchChatHandler extends ListenerAdapter {
 
     @Autowired
     public RitaTwitchChatHandler(RiMarkov markov) {
-        this.markov = markov;
+        this.markov = checkNotNull(markov);
     }
 
     @Override
@@ -43,11 +44,16 @@ public class RitaTwitchChatHandler extends ListenerAdapter {
             logger.debug("Will not take action on my own messages.");
             return;
         }
-        
-        markov.loadFrom(message);
+
+        if( !message.matches(".+[.?!]")) {
+            logger.warn("auto-completing sentence.");
+            message += '.';
+        }
+
+        markov.loadText(message);
 
         if (message.startsWith("!speak") && markov.ready()) {
-            String generated = joiner.join(markov.generateSentences(rando.nextInt(4) + 1));
+            String generated = joiner.join(markov.generateSentences(rando.nextInt(2) + 1));
             logger.info("Responding with generated sentence(s): {}", generated);
             messageEvent.respond(generated);
         }
@@ -58,6 +64,4 @@ public class RitaTwitchChatHandler extends ListenerAdapter {
     public void onPrivateMessage(PrivateMessageEvent event) throws Exception {
         super.onPrivateMessage(event);
     }
-
-
 }

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-@Profile("sql,twitch")
+@Profile("sql")
 public class TwitchMessageSQLHandler extends ListenerAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TwitchMessageSQLHandler.class);

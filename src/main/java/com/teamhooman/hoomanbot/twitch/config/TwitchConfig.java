@@ -99,7 +99,6 @@ public class TwitchConfig {
 
     @Bean(name = "twitchIRCConfig")
     public Configuration.Builder twitchIRCConfig(List<Listener> listeners) {
-
         checkArgument(!isNullOrEmpty(host));
         checkArgument(port > 0);
         checkArgument(!isNullOrEmpty(nickname));
@@ -107,6 +106,7 @@ public class TwitchConfig {
         checkArgument(!isNullOrEmpty(autoJoin));
         checkArgument(listeners != null && listeners.size() > 0);
 
+        logger.info("Listeners: {}", listeners);
         // Some config items from https://github.com/TheLQ/pircbotx/wiki/Twitch.tv-support
         // such as the CAP handlers and the autoNickChange/JoinOnWhoEnabled settings.
 
