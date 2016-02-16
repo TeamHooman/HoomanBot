@@ -21,8 +21,8 @@ import static java.util.stream.Collectors.toSet;
  * Raw Message: "ryonEat ryonEat ryonGood ryonGood ryonGucci ryonSail ryonScotch ryonScotch ryonBye ryonRealTalk ryonRealTalk"
  * Emotes tag content: "47816:0-6,8-14/44751:16-23,25-32/44757:34-42/44579:44-51/37365:53-62,64-73/44577:75-81/38117:83-94,96-107"
  * <p>
- * This means that the Twitch emote with ID 47816 takes up indeces with ranges 0-6 and 8-14 (inclusive) in the message String.
- * The emote with ID 44751 takes up indeces sets 16-23 and 25-32, etc.
+ * This means that the Twitch emote with ID 47816 takes up indices with ranges 0-6 and 8-14 (inclusive) in the message String.
+ * The emote with ID 44751 takes up indices sets 16-23 and 25-32, etc.
  */
 public class EmoteTagParser {
 
