@@ -14,8 +14,8 @@ grammar TwitchEmote;
 
 
 emoteString : emote('/'emote)*;
-emote: emoteid':'indeces(','indeces)*;
-indeces: startindex'-'endindex;
+emote: emoteid':'indices(','indices)*;
+indices: startindex'-'endindex;
 emoteid: INT;
 startindex: INT;
 endindex: INT;
@@ -23,8 +23,8 @@ endindex: INT;
 INT: [0-9]+;
 
 //emoteString : emote('/'emote)* ;
-//emote : EMOTEID':'indeces(','indeces)* ;
-//indeces : STARTINDEX'-'ENDINDEX ;
+//emote : EMOTEID':'indices(','indices)* ;
+//indices : STARTINDEX'-'ENDINDEX ;
 //
 //
 //EMOTEID : INT;
