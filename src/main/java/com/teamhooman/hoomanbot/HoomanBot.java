@@ -16,7 +16,7 @@ public class HoomanBot {
     private final static Logger logger = org.slf4j.LoggerFactory.getLogger(HoomanBot.class);
 
     public static void main(String[] args) throws TwitterException {
-        logger.info("Starting up Twitter Hue Controller...");
+        logger.info("Starting up HoomanBot...");
 
         new SpringApplicationBuilder()
             .logStartupInfo(true)

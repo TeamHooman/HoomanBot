@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-@Profile("rita,sql")
+@Profile("rita")
 @Component
 public class RitaSQLLoader {
 
@@ -43,7 +43,7 @@ public class RitaSQLLoader {
         }
 
         messages.get().forEach( msg -> {
-            logger.debug("Feeding chat message to markov chain generator: {}", msg);
+            logger.debug("Feeding chat message to markov chain generator: {}", msg.getText());
             markov.loadText( msg.getText() );
         });
 

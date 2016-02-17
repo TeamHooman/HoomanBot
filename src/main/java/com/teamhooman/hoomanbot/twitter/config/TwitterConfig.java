@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import twitter4j.*;
 
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Configuration
+@Profile("twitter")
 public class TwitterConfig {
 
     Logger logger = LoggerFactory.getLogger( TwitterConfig.class );

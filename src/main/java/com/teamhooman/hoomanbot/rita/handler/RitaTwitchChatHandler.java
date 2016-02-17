@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import rita.RiMarkov;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -45,17 +46,14 @@ public class RitaTwitchChatHandler extends ListenerAdapter {
             return;
         }
 
-        if( !message.matches(".+[.?!]")) {
-            logger.warn("auto-completing sentence.");
-            message += '.';
-        }
-
-        markov.loadText(message);
-
         if (message.startsWith("!speak") && markov.ready()) {
-            String generated = joiner.join(markov.generateSentences(rando.nextInt(2) + 1));
-            logger.info("Responding with generated sentence(s): {}", generated);
+            String[] sentences = markov.generateSentences(rando.nextInt(2) + 1);
+            String generated = joiner.join(sentences);
+            logger.info("Responding with {} generated sentence(s): {}", sentences.length, Arrays.toString(sentences));
             messageEvent.respond(generated);
+        } else {
+            logger.debug("Feeding Markov Generator with '{}'.", message);
+            markov.loadText(message);
         }
 
     }
