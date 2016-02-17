@@ -50,7 +50,7 @@ dependencies {
 
     compile 'org.twitter4j:twitter4j-stream:+'
     compile 'com.twitter:twitter-text:+'
-    compile 'org.pircbotx:pircbotx:2.1-SNAPSHOT'
+    compile 'org.pircbotx:pircbotx:2+'
 
     compile 'com.google.guava:guava:+'
     compile 'it.unimi.dsi:fastutil:+'
